@@ -270,7 +270,7 @@ def predictionTest(testSet,  testIds, modelOccurVect, ids, truthVals, kNeighbour
         if predGrade < 0:
             predGrade = 0
 
-        writeResults(testIds[indx], predGrade, "testResults.csv")
+        writeResults(testIds[indx], predGrade, "testResults2.csv")
 
 def main():
     modelOccurVect, truthVals, ids = parseDataTrain("data/train_data.csv")
@@ -282,6 +282,10 @@ def main():
     validationIds = ids[668: ]
     validationSetTruthVals = truthVals[668:]
 
+    testModelVect = modelOccurVect
+    idsFull = ids
+    testTruthValues = truthVals
+
     modelOccurVect = modelOccurVect[0:668]
     ids = ids[0: 668]
     truthVals = truthVals[0: 668]
@@ -292,7 +296,7 @@ def main():
     createOutFile("predictionResults.csv")
     predictionValidation(validationSet, validationIds, validationSetTruthVals, modelOccurVect, ids, truthVals, kNeighbours, threshold)
 
-    createOutFile("testResults.csv")
-    predictionTest(testSet, testIds, modelOccurVect, ids, truthVals, kNeighbours, threshold)
+    createOutFile("testResults2.csv")
+    predictionTest(testSet, testIds, testModelVect, idsFull, testTruthValues, kNeighbours, threshold)
 
 main()
