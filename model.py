@@ -244,6 +244,7 @@ def predictionValidation(testSet,  testIds, testSetTruthVals, modelOccurVect, id
         rmse += error
 
     print (math.sqrt(rmse / len(testSet)))
+    return (math.sqrt(rmse / len(testSet)))
 
 def predictionTest(testSet,  testIds, modelOccurVect, ids, truthVals, kNeighbours, threshold):
     for indx, val in enumerate(testSet):
@@ -276,25 +277,27 @@ def main():
     modelOccurVect, truthVals, ids = parseDataTrain("data/train_data.csv")
     testSet, testIds = parseDataTest("data/test_data.csv")
 
-    #Splitting train data into training set and validation set
-
-    validationSet = modelOccurVect[668:]
-    validationIds = ids[668: ]
-    validationSetTruthVals = truthVals[668:]
-
     testModelVect = modelOccurVect
     idsFull = ids
     testTruthValues = truthVals
 
-    modelOccurVect = modelOccurVect[0:668]
-    ids = ids[0: 668]
-    truthVals = truthVals[0: 668]
+    threshold = 0.968
+    kNeighbours = 75
+    predSum = 0
 
-    threshold = 0.95
-    kNeighbours = 12
+    #Splitting train data into training set and validation set for k-fold cross validation
+    for i in range(5):
+        validationSet = modelOccurVect[int(i * 0.2 * 835): int((i + 1) * 0.2 * 835)]
+        validationIds = ids[int(i * 0.2 * 835): int((i + 1) * 0.2 * 835)]
+        validationSetTruthVals = truthVals[int(i * 0.2 * 835): int((i+ 1) * 0.2 * 835)]
 
-    createOutFile("predictionResults.csv")
-    predictionValidation(validationSet, validationIds, validationSetTruthVals, modelOccurVect, ids, truthVals, kNeighbours, threshold)
+        model = modelOccurVect[0:int(i * 0.2 * 835) ] + modelOccurVect[int((i + 1) * 0.2 * 835)  : 835]
+
+        createOutFile("predictionResults.csv")
+        pred = predictionValidation(validationSet, validationIds, validationSetTruthVals, model, ids, truthVals, kNeighbours, threshold)
+        predSum += pred
+
+    print("Final", predSum / 5)
 
     createOutFile("testResults2.csv")
     predictionTest(testSet, testIds, testModelVect, idsFull, testTruthValues, kNeighbours, threshold)
